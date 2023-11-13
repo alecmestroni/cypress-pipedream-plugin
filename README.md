@@ -38,7 +38,7 @@ $ npm install -g cypress-pipedream-plugin
 ```javascript
 cy.clearMessagesHistory() //
 cy.get('[data-cy="send-sms"]', { timeout: 120000 }).click() // Command to send the SMS from the frontend
-cy.getMessagesHistory()
+cy.getLastMessage()
 ```
 
 According to [cypress documentation](https://docs.cypress.io/guides/references/best-practices#Selecting-Elements) adding the data-cy tag to your frontend, is the best way to keep your test updated and maintainable.

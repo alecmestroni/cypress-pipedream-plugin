@@ -65,3 +65,19 @@ You MUST set these environment variables to make this plugin working
 
 To set these variables dynamically in a multi environment cypress-test, you can use the following plugin:
 [cypress-env](https://www.npmjs.com/package/cypress-env)
+
+## THE JOB IS DONE!
+
+Happy testing to everyone!
+
+ALEC-JS
+
+<h3 align="center">
+🙌 Donate to support my work & further development! 🙌
+</h3>
+
+<h3 align="center">
+  <a href="https://paypal.me/AlecMestroni?country.x=IT&locale.x=it_IT">
+    <img src="https://raw.githubusercontent.com/alecmestroni/cypress-xray-junit-reporter/main/img/badge.svg" width="111" align="center" />
+  </a>
+</h3>

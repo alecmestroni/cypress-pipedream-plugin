@@ -1,0 +1,25 @@
+{
+  "name": "cypress-pipedream-plugin",
+  "version": "0.9.0",
+  "description": "This npm library enhances Cypress testing capabilities by providing convenient commands for retrieving received SMS history from Pipedream. Simplify your end-to-end testing workflow by effortlessly integrating SMS history verification into your Cypress tests.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alecmestroni/cypress-pipedream-plugin.git"
+  },
+  "keywords": [
+    "pipedream",
+    "cypress",
+    "e3e",
+    "sms"
+  ],
+  "author": "alec mestroni",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/alecmestroni/cypress-pipedream-plugin/issues"
+  },
+  "homepage": "https://github.com/alecmestroni/cypress-pipedream-plugin#readme"
+}

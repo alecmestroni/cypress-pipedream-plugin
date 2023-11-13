@@ -1,17 +1,18 @@
+const dir = Cypress.env('pipedreamFolderPath') ? Cypress.env('pipedreamFolderPath') : 'cypress/fixtures/sms_response'
+
+const HEADERS = {
+    "Authorization": Cypress.env('pipedreamBearer'),
+}
+
+const options = {
+    url: Cypress.env('pipedreamUrl') + "/event_summaries",
+    headers: HEADERS,
+}
+const maxRetries = Cypress.env('pipedreamMaxRetries') ? Cypress.env('pipedreamMaxRetries') : 10
+
 if (Cypress.env('pipedreamBearer') && Cypress.env('pipedreamUrl')) {
     Cypress.Commands.add('getLastMessage', (count = 0) => {
-        const dir = Cypress.env('pipedreamFolderPath') ? Cypress.env('pipedreamFolderPath') : 'cypress/fixtures/sms_response'
-
-        const HEADERS = {
-            "Authorization": Cypress.env('pipedreamBearer'),
-        }
-
-        const options = {
-            url: Cypress.env('pipedreamUrl') + "/event_summaries",
-            headers: HEADERS,
-        }
         // Loop checking every 1000ms for a max of pipedreamMaxRetries times/seconds
-        const maxRetries = Cypress.env('pipedreamMaxRetries') ? Cypress.env('pipedreamMaxRetries') : 10
         if (count === maxRetries) {
             throw new Error(`CYPRESS-PIPEDREAM-PLUGIN | No message received in ${Cypress.env('pipedreamMaxRetries')}seconds, please check ${Cypress.env('pipedreamUrl')}`)
         }

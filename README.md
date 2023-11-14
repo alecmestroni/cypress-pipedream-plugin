@@ -29,11 +29,12 @@ $ npm install -g cypress-pipedream-plugin
 
 ## Added commands
 
-| Commands                          | Notes                                                                                                                                                                                            |
-| --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| cy.getLastMessage()               | Attempts to retrieve last SMS for a specific Pipedream Source within a specified time limit. Save OTP or URL (starting with 'https') in a specific file. OTP.json for OTPs and URL.json for URLs |
-| cy.clearMessagesHistory()         | Clears the SMS history for a specific Pipedream Source.                                                                                                                                          |
-| cy.clearHistorySendSmsAndGetSMS() | This command simplifies the usage by executing the following commands in sequence:                                                                                                               |
+| Commands                          | Notes                                                                                                          |
+| --------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| cy.getLastMessage()               | Attempts to retrieve last (NEWEST) SMS for a specific Pipedream Source History within a specified time limit.  |
+| cy.getFirstMessage()              | Attempts to retrieve first (OLDEST) SMS for a specific Pipedream Source History within a specified time limit. |
+| cy.clearMessagesHistory()         | Clears the SMS history for a specific Pipedream Source.                                                        |
+| cy.clearHistorySendSmsAndGetSMS() | This command simplifies the usage by executing the following commands in sequence:                             |
 
 ```javascript
 cy.clearMessagesHistory() //
@@ -56,15 +57,31 @@ import 'cypress-pipedream-plugin'
 ### Inside your environment file
 
 You MUST set these environment variables to make this plugin working
-| Parameter | Mandatory | Notes | Default
-| ----------------------- | --------- | ---------------------------------------- |------------ |
-| pipedreamBearer | TRUE | Bearer used for Pipedream Auth|
-| pipedreamUrl | TRUE | Your Pipedream Source URL|
-| pipedreamMaxRetries | FALSE | Max retires value for the command cy.getMessagesHistory()| 120 (seconds)|
-| pipedreamFolderPath | FALSE |Folder where the SMS body will be saved | 'cypress/fixtures/sms-response' |
+
+| Parameter           | Mandatory | Notes                                                     | Default                         |
+| ------------------- | --------- | --------------------------------------------------------- | ------------------------------- |
+| pipedreamBearer     | TRUE      | Bearer used for Pipedream Auth                            | \                               |
+| pipedreamUrl        | TRUE      | Your Pipedream Source URL                                 | \                               |
+| pipedreamMaxRetries | FALSE     | Max retires value for the command cy.getMessagesHistory() | 120 (seconds)                   |
+| pipedreamFolderPath | FALSE     | Folder where the SMS body will be saved                   | 'cypress/fixtures/sms-response' |
 
 To set these variables dynamically in a multi environment cypress-test, you can use the following plugin:
 [cypress-env](https://www.npmjs.com/package/cypress-env)
+
+### Considerations
+
+SMSs that are to be tested, in most cases should contain OTP or ULR.  
+OTP will be saved in a file named OTP.json, while ULR will be saved in a file named ULR.json.  
+To check the file contents, run the following command:
+
+```javascript
+cy.readFile('cypress/fixtures/sms_response/OTP.json', {
+	timeout: 60000,
+	retries: 3,
+}).then((otp) {
+  ... // do something with the saved OTP or URL
+})
+```
 
 ### Missing configuration error:
 

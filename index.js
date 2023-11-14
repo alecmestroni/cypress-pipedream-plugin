@@ -10,8 +10,24 @@ const options = {
 }
 const maxRetries = Cypress.env('pipedreamMaxRetries') ? Cypress.env('pipedreamMaxRetries') : 10
 
+const writeSMS = function (body) {
+    if (body.includes('https')) {
+        // Regex to find the link
+        const tempUrl = body.match(/(https:\/\/.*?) /)[1]
+        cy.log('〰️ ' + 'URL detected: "' + tempUrl + '"')
+        // Write file with the link
+        cy.writeFile(dir + '/URL.json', JSON.stringify(tempUrl))
+    } else {
+        // Regex to find the OTP
+        const otp = body.match(/\d+/g)[0]
+        cy.log('〰️ ' + 'OTP detected: "' + otp + '"')
+        // Write file with the OTP
+        cy.writeFile(dir + '/OTP.json', JSON.stringify(otp))
+    }
+}
+
 if (Cypress.env('pipedreamBearer') && Cypress.env('pipedreamUrl')) {
-    Cypress.Commands.add('getLastMessage', (count = 0) => {
+    Cypress.Commands.add('getFirstMessage', (count = 0) => {
         // Loop checking every 1000ms for a max of pipedreamMaxRetries times/seconds
         if (count === maxRetries) {
             throw new Error(`CYPRESS-PIPEDREAM-PLUGIN | No message received in ${Cypress.env('pipedreamMaxRetries')}seconds, please check ${Cypress.env('pipedreamUrl')}`)
@@ -27,19 +43,32 @@ if (Cypress.env('pipedreamBearer') && Cypress.env('pipedreamUrl')) {
                     expect(res.body.data).to.not.be.empty
                     const body = res.body.data[res.body.data.length - 1].event.Body
                     cy.log('📧 ' + body)
-                    if (body.includes('https')) {
-                        // Regex to find the link
-                        const tempUrl = body.match(/(https:\/\/.*?) /)[1]
-                        cy.log('〰️ ' + 'URL detected: "' + tempUrl + '"')
-                        // Write file with the link
-                        cy.writeFile(dir + '/URL.json', JSON.stringify(tempUrl))
-                    } else {
-                        // Regex to find the OTP
-                        const otp = body.match(/\d+/g)[0]
-                        cy.log('〰️ ' + 'OTP detected: "' + otp + '"')
-                        // Write file with the OTP
-                        cy.writeFile(dir + '/OTP.json', JSON.stringify(otp))
-                    }
+                    writeSMS(body)
+                }
+                if (newMessageAvailable === false) {
+                    cy.wait(1000)
+                    cy.getLastMessage(++count)
+                }
+            });
+    })
+
+    Cypress.Commands.add('getLastMessage', (count = 0) => {
+        // Loop checking every 1000ms for a max of pipedreamMaxRetries times/seconds
+        if (count === maxRetries) {
+            throw new Error(`CYPRESS-PIPEDREAM-PLUGIN | No message received in ${Cypress.env('pipedreamMaxRetries')}seconds, please check ${Cypress.env('pipedreamUrl')}`)
+        }
+
+        cy.request(options)
+            .then((res) => {
+                let newMessageAvailable = false
+                if (res.body.data.length !== 0) {
+                    newMessageAvailable = true
+                    expect(res.status).to.be.eq(200)
+                    expect(res.statusText).to.be.eq("OK")
+                    expect(res.body.data).to.not.be.empty
+                    const body = res.body.data[0].event.Body
+                    cy.log('📧 ' + body)
+                    writeSMS(body)
                 }
                 if (newMessageAvailable === false) {
                     cy.wait(1000)

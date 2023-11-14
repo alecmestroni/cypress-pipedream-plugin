@@ -27,6 +27,13 @@ Alternatively, you can install it as a global module:
 $ npm install -g cypress-pipedream-plugin
 ```
 
+## Prerequisites
+
+A pipedream source: https://pipedream.com/sources/new.  
+Pay attention to set the Body Only option to true when creating the source, if u haven't and you have already created the Pipedream-Source enables it here: https://pipedream.com/sources/{your-source}/configuration
+
+![](img\body-only-tag.png)
+
 ## Added commands
 
 | Commands                          | Notes                                                                                                          |

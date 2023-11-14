@@ -60,7 +60,7 @@ You MUST set these environment variables to make this plugin working
 | ----------------------- | --------- | ---------------------------------------- |------------ |
 | pipedreamBearer | TRUE | Bearer used for Pipedream Auth|
 | pipedreamUrl | TRUE | Your Pipedream Source URL|
-| pipedreamMaxRetries | FALSE | Max retires value for the command cy.getMessagesHistory()| 10 (seconds) |
+| pipedreamMaxRetries | FALSE | Max retires value for the command cy.getMessagesHistory()| 120 (seconds)|
 | pipedreamFolderPath | FALSE |Folder where the SMS body will be saved | 'cypress/fixtures/sms-response' |
 
 To set these variables dynamically in a multi environment cypress-test, you can use the following plugin:

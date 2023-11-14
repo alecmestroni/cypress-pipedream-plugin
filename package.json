@@ -21,5 +21,8 @@
   "bugs": {
     "url": "https://github.com/alecmestroni/cypress-pipedream-plugin/issues"
   },
-  "homepage": "https://github.com/alecmestroni/cypress-pipedream-plugin#readme"
+  "homepage": "https://github.com/alecmestroni/cypress-pipedream-plugin#readme",
+  "devDependencies": {
+    "typescript": "^5.2.2"
+  }
 }

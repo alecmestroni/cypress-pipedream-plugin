@@ -66,6 +66,28 @@ You MUST set these environment variables to make this plugin working
 To set these variables dynamically in a multi environment cypress-test, you can use the following plugin:
 [cypress-env](https://www.npmjs.com/package/cypress-env)
 
+### Missing configuration error:
+
+```
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+  Running:  myFirstTest.cy.js                                                               (1 of 1)
+
+    An uncaught error was detected outside of a test (Attempt 1 of 2)
+    Error: The following error originated from your test code, not from Cypress.
+  1) An uncaught error was detected outside of a test
+
+  0 passing (1s)
+  1 failing
+
+  1) An uncaught error was detected outside of a test:
+     Error: The following error originated from your test code, not from Cypress.
+
+  > CYPRESS-PIPEDREAM-PLUGIN | Missing environment variables: env('pipedreamBearer') & env('pipedreamUrl') needed
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+```
+
 ## THE JOB IS DONE!
 
 Happy testing to everyone!

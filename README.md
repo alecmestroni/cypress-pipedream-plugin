@@ -30,9 +30,9 @@ $ npm install -g cypress-pipedream-plugin
 ## Prerequisites
 
 A Pipedream source: https://pipedream.com/sources/new.  
-Pay attention to set the *Body Only* option to true when creating the source, if you haven't and you have already created the Pipedream-Source enables it here: https://pipedream.com/sources/{your-source}/configuration
+Pay attention to set the _Body Only_ option to true when creating the source, if you haven't and you have already created the Pipedream-Source enables it here: https://pipedream.com/sources/{your-source}/configuration
 
-![](https://raw.githubusercontent.com/alecmestroni/cypress-pipedream-plugin/main/img/SourceTahBodyOnly.png)
+![](https://raw.githubusercontent.com/alecmestroni/cypress-pipedream-plugin/main/img/SourceTagBodyOnly.png)
 
 ## Added commands
 
@@ -65,28 +65,27 @@ import 'cypress-pipedream-plugin'
 
 You MUST set these environment variables to make this plugin working
 
-| Parameter           | Mandatory | Notes                                                     | Default                         |
-| ------------------- | --------- | --------------------------------------------------------- | ------------------------------- |
-| pipedreamBearer     | TRUE      | Bearer used for Pipedream Auth                            | \                               |
-| pipedreamUrl        | TRUE      | Your Pipedream Source URL                                 | \                               |
-| pipedreamMaxRetries | FALSE     | Max retires value for the command cy.getMessagesHistory() | 120 (seconds)                   |
-| pipedreamFolderPath | FALSE     | Folder where the SMS body will be saved                   | 'cypress/fixtures/sms-response' |
+| Parameter           | Mandatory | Notes                                                                          | Default                         |
+| ------------------- | --------- | ------------------------------------------------------------------------------ | ------------------------------- |
+| pipedreamBearer     | TRUE      | Bearer used for Pipedream Auth                                                 | \                               |
+| pipedreamSourceID   | TRUE      | Your Pipedream Source ID                                                       | \                               |
+| pipedreamMaxRetries | FALSE     | Max retires value for the commands cy.getLastMessage() or cy.getFirstMessage() | 120 (seconds)                   |
+| pipedreamFolderPath | FALSE     | Folder where the SMS body will be saved                                        | 'cypress/fixtures/sms-response' |
+| pipedreamFileName   | FALSE     | File name in which the message will be written                                 | 'message.json'                  |
 
 To set these variables dynamically in a multi environment cypress-test, you can use the following plugin:
 [cypress-env](https://www.npmjs.com/package/cypress-env)
 
 ### Considerations
 
-SMSs that are to be tested, in most cases should contain OTP or ULR.  
-OTP will be saved in a file named OTP.json, while ULR will be saved in a file named ULR.json.  
-To check the file contents, run the following command:
+To check the file contents, you can use the following command:
 
 ```javascript
-cy.readFile('cypress/fixtures/sms_response/OTP.json', {
+cy.readFile('cypress/fixtures/sms_response/message.json', {
 	timeout: 60000,
 	retries: 3,
-}).then((otp) {
-  ... // do something with the saved OTP or URL
+}).then((message) {
+  ... // do something with the saved message
 })
 ```
 
@@ -107,7 +106,7 @@ cy.readFile('cypress/fixtures/sms_response/OTP.json', {
   1) An uncaught error was detected outside of a test:
      Error: The following error originated from your test code, not from Cypress.
 
-  > CYPRESS-PIPEDREAM-PLUGIN | Missing environment variables: env('pipedreamBearer') & env('pipedreamUrl') needed
+  > CYPRESS-PIPEDREAM-PLUGIN | Missing environment variables: env('pipedreamBearer') & env('pipedreamSourceID') needed
 
 ────────────────────────────────────────────────────────────────────────────────────────────────────
 ```

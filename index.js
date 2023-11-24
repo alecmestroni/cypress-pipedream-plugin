@@ -1,36 +1,28 @@
-const dir = Cypress.env('pipedreamFolderPath') ? Cypress.env('pipedreamFolderPath') : 'cypress/fixtures/sms_response'
-
 const HEADERS = {
     "Authorization": Cypress.env('pipedreamBearer'),
 }
 
-const options = {
-    url: Cypress.env('pipedreamUrl') + "/event_summaries",
-    headers: HEADERS,
-}
+const dir = Cypress.env('pipedreamFolderPath') ? Cypress.env('pipedreamFolderPath') : 'cypress/fixtures/sms_response'
+
 const maxRetries = Cypress.env('pipedreamMaxRetries') ? Cypress.env('pipedreamMaxRetries') : 10
 
+const fileName = Cypress.env('pipedreamFileName') ? Cypress.env('pipedreamFileName') : 'message.json'
+
+const baseUrl = "https://api.pipedream.com/v1/sources/" + Cypress.env('pipedreamSourceID')
+
 const writeSMS = function (body) {
-    if (body.includes('https')) {
-        // Regex to find the link
-        const tempUrl = body.match(/(https:\/\/.*?) /)[1]
-        cy.log('〰️ ' + 'URL detected: "' + tempUrl + '"')
-        // Write file with the link
-        cy.writeFile(dir + '/URL.json', JSON.stringify(tempUrl))
-    } else {
-        // Regex to find the OTP
-        const otp = body.match(/\d+/g)[0]
-        cy.log('〰️ ' + 'OTP detected: "' + otp + '"')
-        // Write file with the OTP
-        cy.writeFile(dir + '/OTP.json', JSON.stringify(otp))
-    }
+    cy.writeFile(dir + fileName, JSON.stringify(body))
 }
 
-if (Cypress.env('pipedreamBearer') && Cypress.env('pipedreamUrl')) {
+if (Cypress.env('pipedreamBearer') && Cypress.env('pipedreamSourceID')) {
     Cypress.Commands.add('getFirstMessage', (count = 0) => {
+        const options = {
+            url: baseUrl + "/event_summaries",
+            headers: HEADERS,
+        }
         // Loop checking every 1000ms for a max of pipedreamMaxRetries times/seconds
         if (count === maxRetries) {
-            throw new Error(`CYPRESS-PIPEDREAM-PLUGIN | No message received in ${Cypress.env('pipedreamMaxRetries')}seconds, please check ${Cypress.env('pipedreamUrl')}`)
+            throw new Error(`CYPRESS-PIPEDREAM-PLUGIN | No message received in ${Cypress.env('pipedreamMaxRetries')}seconds, please check ${Cypress.env('pipedreamSourceID')}`)
         }
 
         cy.request(options)
@@ -53,9 +45,13 @@ if (Cypress.env('pipedreamBearer') && Cypress.env('pipedreamUrl')) {
     })
 
     Cypress.Commands.add('getLastMessage', (count = 0) => {
+        const options = {
+            url: baseUrl + "/event_summaries",
+            headers: HEADERS,
+        }
         // Loop checking every 1000ms for a max of pipedreamMaxRetries times/seconds
         if (count === maxRetries) {
-            throw new Error(`CYPRESS-PIPEDREAM-PLUGIN | No message received in ${Cypress.env('pipedreamMaxRetries')}seconds, please check ${Cypress.env('pipedreamUrl')}`)
+            throw new Error(`CYPRESS-PIPEDREAM-PLUGIN | No message received in ${Cypress.env('pipedreamMaxRetries')}seconds, please check ${Cypress.env('pipedreamSourceID')}`)
         }
 
         cy.request(options)
@@ -80,7 +76,7 @@ if (Cypress.env('pipedreamBearer') && Cypress.env('pipedreamUrl')) {
     Cypress.Commands.add('clearMessagesHistory', () => {
         const options = {
             method: "DELETE",
-            url: Cypress.env('pipedreamUrl') + "/events",
+            url: baseUrl + "/events",
             headers: HEADERS,
         }
         cy.request(options).then(res => {
@@ -95,6 +91,6 @@ if (Cypress.env('pipedreamBearer') && Cypress.env('pipedreamUrl')) {
         cy.getLastMessage()
     })
 } else {
-    throw new Error(`CYPRESS-PIPEDREAM-PLUGIN | Missing environment variables: env('pipedreamBearer') & env('pipedreamUrl') needed`)
+    throw new Error(`CYPRESS-PIPEDREAM-PLUGIN | Missing environment variables: env('pipedreamBearer') & env('pipedreamSourceID') needed`)
 
 }

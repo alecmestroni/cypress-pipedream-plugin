@@ -38,15 +38,15 @@ Pay attention to set the _Body Only_ option to true when creating the source, if
 
 | Commands                          | Notes                                                                                                          |
 | --------------------------------- | -------------------------------------------------------------------------------------------------------------- |
-| cy.getLastMessage()               | Attempts to retrieve last (NEWEST) SMS for a specific Pipedream Source History within a specified time limit.  |
-| cy.getFirstMessage()              | Attempts to retrieve first (OLDEST) SMS for a specific Pipedream Source History within a specified time limit. |
+| cy.getNewestMessage()             | Attempts to retrieve last (NEWEST) SMS for a specific Pipedream Source History within a specified time limit.  |
+| cy.getOldestMessage()             | Attempts to retrieve first (OLDEST) SMS for a specific Pipedream Source History within a specified time limit. |
 | cy.clearMessagesHistory()         | Clears the SMS history for a specific Pipedream Source.                                                        |
 | cy.clearHistorySendSmsAndGetSMS() | This command simplifies the usage by executing the following commands in sequence:                             |
 
 ```javascript
 cy.clearMessagesHistory() //
 cy.get('[data-cy="send-sms"]', { timeout: 120000 }).click() // Command to send the SMS from the frontend
-cy.getLastMessage()
+cy.getNewestMessage()
 ```
 
 According to [cypress documentation](https://docs.cypress.io/guides/references/best-practices#Selecting-Elements) adding the data-cy tag to your frontend, is the best way to keep your test updated and maintainable.
@@ -65,13 +65,13 @@ import 'cypress-pipedream-plugin'
 
 You MUST set these environment variables to make this plugin working
 
-| Parameter           | Mandatory | Notes                                                                          | Default                         |
-| ------------------- | --------- | ------------------------------------------------------------------------------ | ------------------------------- |
-| pipedreamBearer     | TRUE      | Bearer used for Pipedream Auth                                                 | \                               |
-| pipedreamSourceID   | TRUE      | Your Pipedream Source ID                                                       | \                               |
-| pipedreamMaxRetries | FALSE     | Max retires value for the commands cy.getLastMessage() or cy.getFirstMessage() | 120 (seconds)                   |
-| pipedreamFolderPath | FALSE     | Folder where the SMS body will be saved                                        | 'cypress/fixtures/sms-response' |
-| pipedreamFileName   | FALSE     | File name in which the message will be written                                 | 'message.json'                  |
+| Parameter           | Mandatory | Notes                                                                             | Default                         |
+| ------------------- | --------- | --------------------------------------------------------------------------------- | ------------------------------- |
+| pipedreamBearer     | TRUE      | Bearer used for Pipedream Auth                                                    | \                               |
+| pipedreamSourceID   | TRUE      | Your Pipedream Source ID                                                          | \                               |
+| pipedreamMaxRetries | FALSE     | Max retires value for the commands cy.getOldestMessage() or cy.getNewestMessage() | 120 (seconds)                   |
+| pipedreamFolderPath | FALSE     | Folder where the SMS body will be saved                                           | 'cypress/fixtures/sms-response' |
+| pipedreamFileName   | FALSE     | File name in which the message will be written                                    | 'message.json'                  |
 
 To set these variables dynamically in a multi environment cypress-test, you can use the following plugin:
 [cypress-env](https://www.npmjs.com/package/cypress-env)

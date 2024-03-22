@@ -4,7 +4,7 @@ const HEADERS = {
 
 const dir = Cypress.env('pipedreamFolderPath') ? Cypress.env('pipedreamFolderPath') : 'cypress/fixtures/sms_response'
 
-const maxRetries = Cypress.env('pipedreamMaxRetries') ? Cypress.env('pipedreamMaxRetries') : 10
+const maxRetries = Cypress.env('pipedreamMaxRetries') ? Cypress.env('pipedreamMaxRetries') : 12
 
 const fileName = Cypress.env('pipedreamFileName') ? Cypress.env('pipedreamFileName') : 'message.json'
 
@@ -41,8 +41,8 @@ const getMessage = (age, count = 0) => {
                 writeSMS(SMSBody)
             }
             if (newMessageAvailable === false) {
-                cy.wait(1000)
-                getMessage(age, count++)
+                cy.wait(1200)
+                getMessage(age, ++count)
             }
         });
 }

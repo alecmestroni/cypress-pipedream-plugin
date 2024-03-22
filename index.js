@@ -21,7 +21,7 @@ const getMessage = (age, count = 0) => {
     }
     // Loop checking every 1000ms for a max of pipedreamMaxRetries times/seconds
     if (count === maxRetries) {
-        throw new Error(`CYPRESS-PIPEDREAM-PLUGIN | No message received in ${Cypress.env('pipedreamMaxRetries')}seconds, please check https://pipedream.com/sources/${Cypress.env('pipedreamSourceID')}`)
+        throw new Error(`CYPRESS-PIPEDREAM-PLUGIN | No message received in ${maxRetries}seconds, please check https://pipedream.com/sources/${Cypress.env('pipedreamSourceID')}`)
     }
     cy.request(options)
         .then((res) => {

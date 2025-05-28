@@ -65,13 +65,13 @@ import 'cypress-pipedream-plugin'
 
 You MUST set these environment variables to make this plugin working
 
-| Parameter           | Mandatory | Notes                                                                             | Default                         |
-| ------------------- | --------- | --------------------------------------------------------------------------------- | ------------------------------- |
-| pipedreamBearer     | TRUE      | Bearer used for Pipedream Auth                                                    | \                               |
-| pipedreamSourceID   | TRUE      | Your Pipedream Source ID                                                          | \                               |
-| pipedreamMaxRetries | FALSE     | Max retires value for the commands cy.getOldestMessage() or cy.getNewestMessage() | 120 (seconds)                   |
-| pipedreamFolderPath | FALSE     | Folder where the SMS body will be saved                                           | 'cypress/fixtures/sms-response' |
-| pipedreamFileName   | FALSE     | File name in which the message will be written                                    | 'message.json'                  |
+| Parameter           | Mandatory | Notes                                                                                  | Default                         |
+| ------------------- | --------- | -------------------------------------------------------------------------------------- | ------------------------------- |
+| pipedreamBearer     | TRUE      | Bearer used for Pipedream Auth                                                         | \                               |
+| pipedreamSourceID   | TRUE      | Your Pipedream Source ID                                                               | \                               |
+| pipedreamMaxRetries | Optional  | Maximum wait time (in minutes) for `cy.getOldestMessage()` and `cy.getNewestMessage()` | 1                               |
+| pipedreamFolderPath | FALSE     | Folder where the SMS body will be saved                                                | 'cypress/fixtures/sms-response' |
+| pipedreamFileName   | FALSE     | File name in which the message will be written                                         | 'message.json'                  |
 
 To set these variables dynamically in a multi environment cypress-test, you can use the following plugin:
 [cypress-env](https://www.npmjs.com/package/cypress-env)

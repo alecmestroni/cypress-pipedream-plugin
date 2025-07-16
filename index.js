@@ -5,12 +5,12 @@ const writeSMS = function (body) {
 }
 
 const HEADERS = {
-  Authorization: Cypress.env('pipedreamBearer')
+  Authorization: Cypress.env('pipedreamBearer'),
 }
 const baseUrl = 'https://api.pipedream.com/v1/sources/' + Cypress.env('pipedreamSourceID')
 const options = {
   url: baseUrl + '/event_summaries',
-  headers: HEADERS
+  headers: HEADERS,
 }
 
 const getMessage = (age, count = 0) => {
@@ -22,7 +22,7 @@ const getMessage = (age, count = 0) => {
   // Loop checking every waitTime seconds for a max of pipedreamMaxRetries times/seconds
   if (count * waitTime >= maxRetries * 60) {
     throw new Error(
-      `CYPRESS-PIPEDREAM-PLUGIN | No message received in ${maxRetries} minuts, please check https://pipedream.com/sources/${Cypress.env(
+      `CYPRESS-PIPEDREAM-PLUGIN | No message received in ${maxRetries} minutes, please check https://pipedream.com/sources/${Cypress.env(
         'pipedreamSourceID'
       )}`
     )
@@ -38,11 +38,23 @@ const getMessage = (age, count = 0) => {
       expect(res.body.data).to.not.be.empty
       if (age === 'newest') {
         SMSBody = res.body.data[0].event.Body
+        cy.log('📧 ' + SMSBody)
+        writeSMS(SMSBody)
       } else if (age === 'oldest') {
         SMSBody = res.body.data[res.body.data.length - 1].event.Body
+        cy.log('📧 ' + SMSBody)
+        writeSMS(SMSBody)
+      } else if (age === 'array') {
+        const messagesArray = []
+        res.body.data.forEach((item) => {
+          if (item.event && item.event.Body) {
+            messagesArray.push(item.event.Body)
+          }
+        })
+        cy.log(`📧 Trovati ${messagesArray.length} messaggi`)
+        cy.log('Messaggi: ' + JSON.stringify(messagesArray))
+        writeSMS(messagesArray)
       }
-      cy.log('📧 ' + SMSBody)
-      writeSMS(SMSBody)
     }
     if (newMessageAvailable === false) {
       cy.wait(waitTime * 1000)
@@ -60,11 +72,15 @@ if (Cypress.env('pipedreamBearer') && Cypress.env('pipedreamSourceID')) {
     getMessage('newest')
   })
 
+  Cypress.Commands.add('getArrayMessage', () => {
+    getMessage('array')
+  })
+
   Cypress.Commands.add('clearMessagesHistory', () => {
     const options = {
       method: 'DELETE',
       url: baseUrl + '/events',
-      headers: HEADERS
+      headers: HEADERS,
     }
     cy.request(options).then((res) => {
       expect(res.body).to.be.eq(' ')

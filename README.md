@@ -36,12 +36,14 @@ Pay attention to set the _Body Only_ option to true when creating the source, if
 
 ## Added commands
 
-| Commands                          | Notes                                                                                                          |
-| --------------------------------- | -------------------------------------------------------------------------------------------------------------- |
-| cy.getNewestMessage()             | Attempts to retrieve last (NEWEST) SMS for a specific Pipedream Source History within a specified time limit.  |
-| cy.getOldestMessage()             | Attempts to retrieve first (OLDEST) SMS for a specific Pipedream Source History within a specified time limit. |
-| cy.clearMessagesHistory()         | Clears the SMS history for a specific Pipedream Source.                                                        |
-| cy.clearHistorySendSmsAndGetSMS() | This command simplifies the usage by executing the following commands in sequence:                             |
+| Commands                            | Notes                                                                                                                                                    |
+| ----------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| cy.getNewestMessage(deleteAfter)    | Retrieves the last (NEWEST) SMS for a specific Pipedream Source History within a specified time limit. Optional: set `deleteAfter=true` to auto-delete.  |
+| cy.getOldestMessage(deleteAfter)    | Retrieves the first (OLDEST) SMS for a specific Pipedream Source History within a specified time limit. Optional: set `deleteAfter=true` to auto-delete. |
+| cy.getArrayMessage()                | Retrieves all SMS messages as an array of objects with `{id, message}` structure. Returns full message list with IDs for selective deletion.             |
+| cy.deleteSpecificMessage(messageId) | Deletes a specific message by its ID. Use after `getArrayMessage()` to selectively remove individual messages.                                           |
+| cy.clearMessagesHistory()           | Clears the entire SMS history for a specific Pipedream Source.                                                                                           |
+| cy.clearHistorySendSmsAndGetSMS()   | This command simplifies the usage by executing the following commands in sequence:                                                                       |
 
 ```javascript
 cy.clearMessagesHistory() //
@@ -58,7 +60,7 @@ According to [cypress documentation](https://docs.cypress.io/guides/references/b
 At the top of your support file (usually cypress/support/e2e.js for e2e testing type):
 
 ```javascript
-import 'cypress-pipedream-plugin'
+import "cypress-pipedream-plugin"
 ```
 
 ### Inside your environment file
@@ -77,6 +79,43 @@ To set these variables dynamically in a multi environment cypress-test, you can 
 [cypress-env](https://www.npmjs.com/package/cypress-env)
 
 ### Considerations
+
+#### Auto-delete messages after retrieval
+
+You can automatically delete a message after reading it by passing `true` to the `deleteAfter` parameter:
+
+```javascript
+// Get newest message and delete it automatically
+cy.getNewestMessage(true)
+
+// Get oldest message and delete it automatically
+cy.getOldestMessage(true)
+```
+
+#### Working with message arrays and selective deletion
+
+Use `getArrayMessage()` to retrieve all messages with their IDs, then selectively delete specific ones:
+
+```javascript
+// Get all messages with IDs
+cy.getArrayMessage()
+
+// Read the saved array and delete a specific message
+cy.readFile("cypress/fixtures/sms_response/message.json").then((messages) => {
+  // messages = [{ id: "1762787731250-0", message: "Your SMS text here" }, ...]
+
+  // Delete the first message
+  cy.deleteSpecificMessage(messages[0].id)
+
+  // Or delete a message based on content
+  const messageToDelete = messages.find((msg) => msg.message.includes("verification code"))
+  if (messageToDelete) {
+    cy.deleteSpecificMessage(messageToDelete.id)
+  }
+})
+```
+
+#### Reading message contents
 
 To check the file contents, you can use the following command:
 

@@ -1,0 +1,59 @@
+# Runs the tests on every push and pull request, and publishes the package to npm on every push to main.
+# Publishing uses npm trusted publishing (OIDC): no NPM_TOKEN secret is needed.
+
+name: Node.js Package
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # A Cypress without cy.env() (Cypress.env() fallback), the first one with cy.env() and the latest release
+        cypress: ['14.5.4', '15.10.0', 'latest']
+    name: test (cypress ${{ matrix.cypress }})
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: cd test && npm install
+      - run: cd test && npm install --no-save cypress@${{ matrix.cypress }}
+      - run: cd test && npm test
+  publish-npm:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      # Required by npm trusted publishing (OIDC)
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          # Trusted publishing requires Node >= 22.14.0 and npm >= 11.5.1
+          node-version: 24
+          registry-url: 'https://registry.npmjs.org'
+      - run: npm --version
+      - name: Skip the publish when this version is already on npm
+        id: check
+        run: |
+          NAME=$(node -p "require('./package.json').name")
+          VERSION=$(node -p "require('./package.json').version")
+          if npm view "$NAME@$VERSION" version >/dev/null 2>&1; then
+            echo "$NAME@$VERSION is already published, skipping"
+            echo "publish=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "publish=true" >> "$GITHUB_OUTPUT"
+          fi
+      - if: steps.check.outputs.publish == 'true'
+        run: npm publish

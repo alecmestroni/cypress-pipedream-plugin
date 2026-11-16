@@ -1,0 +1,17 @@
+{
+  "name": "cypress-pipedream-plugin-test",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Test project for cypress-pipedream-plugin. The Pipedream API is replaced by an in-memory fake, no account is needed.",
+  "scripts": {
+    "cy:open": "cypress open --e2e",
+    "cy:run": "cypress run",
+    "cy:run:missing": "cypress run --config-file cypress.missing.config.js",
+    "test": "npm run cy:run && npm run cy:run:missing"
+  },
+  "license": "ISC",
+  "devDependencies": {
+    "cypress": "^15.21.1",
+    "cypress-pipedream-plugin": "file:.."
+  }
+}

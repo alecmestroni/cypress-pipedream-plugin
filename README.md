@@ -27,6 +27,17 @@ Alternatively, you can install it as a global module:
 $ npm install -g cypress-pipedream-plugin
 ```
 
+## Cypress compatibility
+
+The plugin works with every Cypress version, including Cypress 16.
+
+`Cypress.env()` is deprecated since Cypress 15.10.0 and has been removed in Cypress 16: from version 1.4.0 the plugin reads its configuration with the `cy.env()` command when it is available (Cypress 15.10.0 or later) and falls back to `Cypress.env()` on older versions. Nothing changes in your configuration.
+
+| `cypress-pipedream-plugin` | Cypress                             |
+| -------------------------- | ----------------------------------- |
+| >= 1.4.0                   | Every version, including 16         |
+| <= 1.3.0                   | Up to 15.x (not compatible with 16) |
+
 ## Prerequisites
 
 A Pipedream source: https://pipedream.com/sources/new.  
@@ -72,8 +83,23 @@ You MUST set these environment variables to make this plugin working
 | pipedreamBearer     | TRUE      | Bearer used for Pipedream Auth                                                         | \                               |
 | pipedreamSourceID   | TRUE      | Your Pipedream Source ID                                                               | \                               |
 | pipedreamMaxRetries | Optional  | Maximum wait time (in minutes) for `cy.getOldestMessage()` and `cy.getNewestMessage()` | 1                               |
-| pipedreamFolderPath | FALSE     | Folder where the SMS body will be saved                                                | 'cypress/fixtures/sms-response' |
+| pipedreamFolderPath | FALSE     | Folder where the SMS body will be saved                                                | 'cypress/fixtures/sms_response' |
 | pipedreamFileName   | FALSE     | File name in which the message will be written                                         | 'message.json'                  |
+
+Set them in the `env` object of your Cypress configuration (or with `--env`, `cypress.env.json`, `CYPRESS_*` variables):
+
+```javascript
+// cypress.config.js
+module.exports = defineConfig({
+  env: {
+    pipedreamBearer: "Bearer XXXXXX",
+    pipedreamSourceID: "dc_XXXXXX",
+  },
+})
+```
+
+`pipedreamBearer` is a secret: keep it in `env`, where it is read with `cy.env()` and stays out of the browser until a command needs it.
+On Cypress 15.10.0 or later the other, non-sensitive, parameters can also be set in the `expose` object of the Cypress configuration: a value in `env` takes precedence over the same key in `expose`.
 
 To set these variables dynamically in a multi environment cypress-test, you can use the following plugin:
 [cypress-env](https://www.npmjs.com/package/cypress-env)
@@ -130,22 +156,20 @@ cy.readFile('cypress/fixtures/sms_response/message.json', {
 
 ### Missing configuration error:
 
+From version 1.4.0 the configuration is checked when a command of the plugin is used (and no longer when the plugin is imported), so only the tests that use the plugin fail:
+
 ```
 ────────────────────────────────────────────────────────────────────────────────────────────────────
 
   Running:  myFirstTest.cy.js                                                               (1 of 1)
 
-    An uncaught error was detected outside of a test (Attempt 1 of 2)
-    Error: The following error originated from your test code, not from Cypress.
-  1) An uncaught error was detected outside of a test
+  1) should receive the SMS
 
   0 passing (1s)
   1 failing
 
-  1) An uncaught error was detected outside of a test:
-     Error: The following error originated from your test code, not from Cypress.
-
-  > CYPRESS-PIPEDREAM-PLUGIN | Missing environment variables: env('pipedreamBearer') & env('pipedreamSourceID') needed
+  1) should receive the SMS:
+     Error: CYPRESS-PIPEDREAM-PLUGIN | Missing environment variables: env('pipedreamBearer') & env('pipedreamSourceID') needed
 
 ────────────────────────────────────────────────────────────────────────────────────────────────────
 ```
